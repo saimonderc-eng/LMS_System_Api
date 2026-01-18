@@ -1,6 +1,7 @@
 package com.example.lms_system_api.controller;
 
 import com.example.lms_system_api.dto.ChapterDto;
+import com.example.lms_system_api.dto.ChapterUpdateDto;
 import com.example.lms_system_api.service.ChapterService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class ChapterController {
         return ResponseEntity.noContent().build();
     }
     @PutMapping
-    public ResponseEntity<?> updateChapter(@Valid @RequestBody ChapterDto dto){
+    public ResponseEntity<?> updateChapter(@Valid @RequestBody ChapterUpdateDto dto){
         ChapterDto updatedChapter = chapterService.updateChapter(dto);
         return ResponseEntity.ok(updatedChapter);
     }

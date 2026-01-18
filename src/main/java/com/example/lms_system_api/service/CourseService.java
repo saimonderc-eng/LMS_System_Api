@@ -7,7 +7,6 @@ import com.example.lms_system_api.mapper.CourseMapper;
 import com.example.lms_system_api.repository.CourseRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,14 +39,12 @@ public class CourseService {
     }
 
 
-    public <T> void safetySaveValue(T value, Consumer<T> consumer){
-        if(value != null){
+    public <T> void safetySaveValue(T value, Consumer<T> consumer) {
+        if (value != null) {
             consumer.accept(value);
         }
     }
-
-
-    public CourseDto updateCourse(@Valid CourseUpdateDto dto){
+    public CourseDto updateCourse(@Valid CourseUpdateDto dto) {
         Course course = courseRepository.findById(dto.getId())
                 .orElseThrow(() -> new RuntimeException("Course not found!"));
 

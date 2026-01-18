@@ -1,9 +1,15 @@
 package com.example.lms_system_api.controller;
 
+import com.example.lms_system_api.dto.LessonDto;
+import com.example.lms_system_api.dto.LessonUpdateDto;
 import com.example.lms_system_api.service.LessonService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/lessons")
@@ -11,4 +17,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class LessonController {
 
     private final LessonService lessonService;
+
+    @GetMapping
+    public List<LessonDto> getLessons(){
+        return lessonService.getLessons();
+    }
+    @PostMapping
+    public ResponseEntity<?> createLessons(@RequestBody LessonDto dto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.createLesson(dto));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLesson(@PathVariable Long id){
+        lessonService.deleteLesson(id);
+        return ResponseEntity.noContent().build();
+    }
+    @PutMapping
+    public ResponseEntity<?> updateLessons(@Valid @RequestBody LessonUpdateDto dto){
+        LessonDto updatedLesson = lessonService.updateLesson(dto);
+        return ResponseEntity.ok(updatedLesson);
+    }
 }

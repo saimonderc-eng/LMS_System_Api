@@ -1,6 +1,7 @@
 package com.example.lms_system_api.service;
 
 import com.example.lms_system_api.dto.ChapterDto;
+import com.example.lms_system_api.dto.ChapterUpdateDto;
 import com.example.lms_system_api.entity.Chapter;
 import com.example.lms_system_api.mapper.ChapterMapper;
 import com.example.lms_system_api.repository.ChapterRepository;
@@ -44,7 +45,7 @@ public class ChapterService {
         }
     }
 
-    public ChapterDto updateChapter(@Valid ChapterDto dto) {
+    public ChapterDto updateChapter(@Valid ChapterUpdateDto dto) {
         Chapter chapter = chapterRepository.findById(dto.getId())
                 .orElseThrow(() -> new RuntimeException("Chapter not found!"));
         if(dto.getName() != null && !dto.getName().equals(chapter.getName()) && chapterRepository.existsByName(dto.getName())){
