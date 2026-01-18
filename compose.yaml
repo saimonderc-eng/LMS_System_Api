@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: "postgres:latest"
+    container_name: lms_postgres
+    environment:
+      - "POSTGRES_DB=lms_db"
+      - "POSTGRES_PASSWORD=postgres"
+      - "POSTGRES_USER=postgres"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  api:
+    build: .
+    container_name: lms_api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres?currentSchema=lms_sys_api
+      - SPRING_LIQUIBASE_DEFAULT_SCHEMA=lms_sys_api
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    labels:
+      - "org.springframework.boot.ignore=true"
+
+volumes:
+  postgres_data:
