@@ -1,6 +1,6 @@
 package com.example.lms_system_api.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,15 +13,15 @@ public class LessonUpdateDto {
 
     Long id;
 
-    @NotEmpty(message = "Name cannot be empty!")
+    @NotBlank(message = "Name cannot be empty!")
     String name;
 
-    @NotEmpty(message = "Description cannot be empty!")
+    @NotBlank(message = "Description cannot be empty!")
     String description;
 
-    @NotEmpty(message = "Content cannot be empty!")
+    @NotBlank(message = "Content cannot be empty!")
     String content;
 
-    @NotEmpty(message = "Order cannot be empty!")
-    int order;
+    @NotBlank(message = "Order cannot be empty!")
+    Integer order;
 }

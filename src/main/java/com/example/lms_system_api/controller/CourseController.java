@@ -3,8 +3,8 @@ package com.example.lms_system_api.controller;
 import com.example.lms_system_api.dto.CourseDto;
 import com.example.lms_system_api.dto.CourseUpdateDto;
 import com.example.lms_system_api.service.CourseService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +24,7 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createCourse(@RequestBody CourseDto dto) {
+    public ResponseEntity<?> createCourse(@RequestBody CourseDto dto) throws BadRequestException {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(dto));
     }
 
@@ -34,9 +34,9 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping
-    public ResponseEntity<?> updateCourse(@Valid @RequestBody CourseUpdateDto dto){
-        CourseDto updatedCourse = courseService.updateCourse(dto);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateCourse(@PathVariable Long id, @RequestBody CourseUpdateDto dto) throws BadRequestException {
+        CourseDto updatedCourse = courseService.updateCourse(id, dto);
         return ResponseEntity.ok(updatedCourse);
     }
 }
