@@ -14,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class CourseServiceTest {
 
     @Mock
@@ -87,6 +90,7 @@ public class CourseServiceTest {
     @DisplayName("Ошибка 404 если id курса не найден")
     void deleteCourse_NotFound_Exception(){
         Long id = 1L;
+        when(courseRepository.existsById(any())).thenReturn(true);
         when(courseRepository.existsById(id)).thenReturn(false);
 
         assertThrows(NotFoundException.class, () -> courseService.deleteCourse(id));

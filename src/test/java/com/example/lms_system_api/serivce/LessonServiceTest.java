@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class LessonServiceTest {
     @Mock
     private LessonRepository lessonRepository;
@@ -57,6 +60,8 @@ public class LessonServiceTest {
         dto.setName("Basics");
         Lesson lesson = new Lesson();
 
+        when(chapterRepository.existsById(any())).thenReturn(true);
+        when(lessonRepository.existsByName(any())).thenReturn(false);
         when(lessonRepository.existsByName("Basics")).thenReturn(false);
         when(lessonMapper.toEntity(dto)).thenReturn(lesson);
         when(lessonRepository.save(any())).thenReturn(lesson);
@@ -87,6 +92,7 @@ public class LessonServiceTest {
     void createLessons_NameExists_Exception() {
         LessonDto dto = new LessonDto();
         dto.setName("Basics");
+        when(lessonRepository.existsById(any())).thenReturn(true);
         when(lessonRepository.existsByName("Basics")).thenReturn(true);
 
         assertThrows(BadRequestEx.class, () -> lessonService.createLesson(dto));

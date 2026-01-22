@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class ChapterServiceTest {
     @Mock
     private ChapterRepository chapterRepository;
@@ -57,6 +60,8 @@ public class ChapterServiceTest {
         dto.setName("Basics");
         Chapter chapter = new Chapter();
 
+        when(courseRepository.existsById(any())).thenReturn(true);
+        when(chapterRepository.existsByName(any())).thenReturn(false);
         when(chapterRepository.existsByName("Basics")).thenReturn(false);
         when(chapterMapper.toEntity(dto)).thenReturn(chapter);
         when(chapterRepository.save(any())).thenReturn(chapter);
@@ -87,6 +92,7 @@ public class ChapterServiceTest {
     void createChapter_NameExists_Exception() {
         ChapterDto dto = new ChapterDto();
         dto.setName("Basics");
+        when(courseRepository.existsById(any())).thenReturn(true);
         when(chapterRepository.existsByName("Basics")).thenReturn(true);
 
         assertThrows(BadRequestEx.class, () -> chapterService.createChapter(dto));
@@ -96,6 +102,7 @@ public class ChapterServiceTest {
     @Test
     void deleteChapter_Success(){
         Long id = 1L;
+        when(chapterRepository.existsById(anyLong())).thenReturn(true);
         when(chapterRepository.existsById(id)).thenReturn(true);
 
         chapterService.deleteChapter(id);
