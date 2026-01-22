@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,8 +55,8 @@ public class CourseServiceTest {
         Course course = new Course();
 
         when(courseRepository.existsByName("Java")).thenReturn(false);
-        when(courseMapper.toEntity(dto)).thenReturn(course);
-        when(courseRepository.save(any())).thenReturn(course);
+        when(courseMapper.toEntity(any(CourseDto.class))).thenReturn(course);
+        when(courseRepository.save(any(Course.class))).thenReturn(course);
         when(courseMapper.toDto(course)).thenReturn(dto);
 
         CourseDto result = courseService.createCourse(dto);
@@ -90,7 +89,7 @@ public class CourseServiceTest {
     @DisplayName("Ошибка 404 если id курса не найден")
     void deleteCourse_NotFound_Exception(){
         Long id = 1L;
-        when(courseRepository.existsById(any())).thenReturn(true);
+        when(courseRepository.existsById(anyLong())).thenReturn(false);
         when(courseRepository.existsById(id)).thenReturn(false);
 
         assertThrows(NotFoundException.class, () -> courseService.deleteCourse(id));

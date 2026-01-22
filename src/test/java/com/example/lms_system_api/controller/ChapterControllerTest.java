@@ -76,6 +76,6 @@ class ChapterControllerTest {
     @Test
     void deleteChapter_Success() throws Exception {
         mockMvc.perform(delete("/api/v1/chapters/1"))
-                .andExpect(status().isNoContent()); // или .isOk() в зависимости от твоего кода
+                .andExpect(status().isNoContent());
     }
 }

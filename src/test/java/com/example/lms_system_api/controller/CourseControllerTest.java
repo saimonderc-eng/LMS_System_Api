@@ -75,7 +75,6 @@ public class CourseControllerTest {
     void delete_Success() throws Exception {
         mockMvc.perform(delete("/api/v1/courses/1"))
                 .andExpect(status().isNoContent());
-        // если у тебя возвращается 200, поменяй на .isOk()
     }
 }
 
