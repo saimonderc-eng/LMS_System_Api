@@ -7,7 +7,6 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
   liquibase:
     change-log: classpath:db/changelog/changelog.xml
-    enabled: false
 logging:
   level:
     com.example.lms_system_api: DEBUG
