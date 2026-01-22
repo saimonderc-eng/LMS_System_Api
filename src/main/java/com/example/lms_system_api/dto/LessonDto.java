@@ -1,6 +1,7 @@
 package com.example.lms_system_api.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,18 +12,32 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LessonDto {
 
+    @Schema(description = "Уникальный идентификатор",
+            example = "1",
+            accessMode = Schema.AccessMode.READ_ONLY)
     Long id;
 
-    @NotBlank(message = "Name is required")
+    @Schema(description = "Название урока",
+            example = "Массивы",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotEmpty(message = "Name is required")
     String name;
 
-    @NotBlank(message = "Description is required")
+    @Schema(description = "Описание урока",
+            example = "На этом уроке вы научитесь пользоватся массивами")
+    @NotEmpty(message = "Description is required")
     String description;
 
-    @NotBlank(message = "Content is required")
+    @Schema(description = "Содержание урока",
+            example = "Массивы - это .....")
+    @NotEmpty(message = "Content is required")
     String content;
 
+    @Schema(description = "Порядковый номер, для сортировки внутри главы",
+            example = "1")
     int order;
 
+    @Schema(description = "Уникальный идентификатор главы",
+            example = "2")
     Long chapterId;
 }

@@ -4,13 +4,13 @@ import com.example.lms_system_api.dto.ChapterDto;
 import com.example.lms_system_api.dto.ChapterUpdateDto;
 import com.example.lms_system_api.entity.Chapter;
 import com.example.lms_system_api.entity.Course;
+import com.example.lms_system_api.exception.BadRequestEx;
 import com.example.lms_system_api.exception.NotFoundException;
 import com.example.lms_system_api.mapper.ChapterMapper;
 import com.example.lms_system_api.repository.ChapterRepository;
 import com.example.lms_system_api.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,13 +35,13 @@ public class ChapterService {
     }
 
 
-    public ChapterDto createChapter(ChapterDto dto) throws BadRequestException {
+    public ChapterDto createChapter(ChapterDto dto) {
         log.info("Requested to create chapter: '{}' for course id: {}", dto.getName(), dto.getCourseId());
 
         log.debug("Chapter details: {}", dto);
         if (chapterRepository.existsByName(dto.getName())) {
             log.error("Chapter with name: {} already exists!", dto.getName());
-            throw new BadRequestException("Chapter with this name already exists!");
+            throw new BadRequestEx("Chapter with this name already exists!");
         }
         Course course = courseRepository.findById(dto.getCourseId())
                 .orElseThrow(() -> {
@@ -73,7 +73,7 @@ public class ChapterService {
         }
     }
 
-    public ChapterDto updateChapter(Long id, ChapterUpdateDto dto) throws BadRequestException {
+    public ChapterDto updateChapter(Long id, ChapterUpdateDto dto) {
         log.info("Requested to update chapter by id: {}", id);
 
         log.debug("Chapter details: {}", dto);
@@ -84,7 +84,7 @@ public class ChapterService {
                 });
         if (dto.getName() != null && !dto.getName().equals(chapter.getName()) && chapterRepository.existsByName(dto.getName())) {
             log.error("Chapter with name: {} already exists in database!", dto.getName());
-            throw new BadRequestException("Chapter with this name already exists!");
+            throw new BadRequestEx("Chapter with this name already exists!");
         }
         safetySaveValue(dto.getName(), chapter::setName);
         safetySaveValue(dto.getDescription(), chapter::setDescription);

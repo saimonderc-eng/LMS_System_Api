@@ -2,7 +2,6 @@ package com.example.lms_system_api.exception;
 
 import com.example.lms_system_api.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -27,8 +26,8 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestException exception) {
+    @ExceptionHandler(BadRequestEx.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestEx exception) {
         log.error((exception.getMessage()));
         return ResponseEntity
                 .badRequest()

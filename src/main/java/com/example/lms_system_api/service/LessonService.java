@@ -4,13 +4,13 @@ import com.example.lms_system_api.dto.LessonDto;
 import com.example.lms_system_api.dto.LessonUpdateDto;
 import com.example.lms_system_api.entity.Chapter;
 import com.example.lms_system_api.entity.Lesson;
+import com.example.lms_system_api.exception.BadRequestEx;
 import com.example.lms_system_api.exception.NotFoundException;
 import com.example.lms_system_api.mapper.LessonMapper;
 import com.example.lms_system_api.repository.ChapterRepository;
 import com.example.lms_system_api.repository.LessonRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,13 +34,13 @@ public class LessonService {
         return lessonMapper.toDtoList(lessons);
     }
 
-    public LessonDto createLesson(LessonDto dto) throws BadRequestException {
+    public LessonDto createLesson(LessonDto dto) {
         log.info("Requested to create lesson: '{}' for chapter id: {}", dto.getName(), dto.getChapterId());
 
         log.debug("Lesson details: {}", dto);
         if (lessonRepository.existsByName(dto.getName())) {
             log.error("Lesson with name: {} already exists in database!", dto.getName());
-            throw new BadRequestException("Lesson with this name already exists!");
+            throw new BadRequestEx("Lesson with this name already exists!");
         }
         Chapter chapter = chapterRepository.findById(dto.getChapterId())
                 .orElseThrow(() -> {
@@ -74,7 +74,7 @@ public class LessonService {
         }
     }
 
-    public LessonDto updateLesson(Long id, LessonUpdateDto dto) throws BadRequestException {
+    public LessonDto updateLesson(Long id, LessonUpdateDto dto) {
         log.info("Requested to update values for: {}", dto.getName());
 
         log.debug("Lesson details: {}", dto);
@@ -85,7 +85,7 @@ public class LessonService {
                 });
         if (dto.getName() != null && !dto.getName().equals(lesson.getName()) && lessonRepository.existsByName(dto.getName())) {
             log.error("Lesson with name: {} already exists in database!", dto.getName());
-            throw new BadRequestException("Lessons with this name already exists!");
+            throw new BadRequestEx("Lessons with this name already exists!");
         }
         safetySaveValue(dto.getName(), lesson::setName);
         safetySaveValue(dto.getDescription(), lesson::setDescription);

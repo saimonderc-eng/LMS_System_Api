@@ -1,5 +1,6 @@
 package com.example.lms_system_api.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -11,11 +12,20 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseUpdateDto {
 
+    @Schema(description = "Уникальный идентификатор",
+            example = "1",
+            accessMode = Schema.AccessMode.READ_ONLY)
     Long id;
 
-    @NotBlank(message = "Name cannot be empty")
+    @Schema(description = "Обновленное название курса",
+            example = "Java Middle Developer",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "Name cannot be blank")
     String name;
 
-    @NotBlank(message = "Description cannot be empty")
+    @Schema(description = "Обновленное описание курса",
+            example = "В Java Middle Developer курсе вы получите знания" +
+                    " достаточные для работы на Middle позиции")
+    @NotBlank(message = "Description cannot be blank")
     String description;
 }

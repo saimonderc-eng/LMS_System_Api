@@ -1,5 +1,6 @@
 package com.example.lms_system_api.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -11,17 +12,29 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LessonUpdateDto {
 
+    @Schema(description = "Уникальный идентификатор",
+            example = "1",
+            accessMode = Schema.AccessMode.READ_ONLY)
     Long id;
 
-    @NotBlank(message = "Name cannot be empty!")
+    @Schema(description = "Обновленное название урока",
+            example = "Циклы",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "Name cannot be blank!")
     String name;
 
-    @NotBlank(message = "Description cannot be empty!")
+    @Schema(description = "Обновленное описание урока",
+            example = "На этом уроке вы научитесь пользоватся циклами")
+    @NotBlank(message = "Description cannot be blank!")
     String description;
 
-    @NotBlank(message = "Content cannot be empty!")
+    @Schema(description = "Обновленное содержание урока",
+            example = "Циклы - это .....")
+    @NotBlank(message = "Content cannot be blank!")
     String content;
 
-    @NotBlank(message = "Order cannot be empty!")
+    @Schema(description = "Обновленный порядок урока",
+            example = "2")
+    @NotBlank(message = "Order cannot be blank!")
     Integer order;
 }

@@ -3,12 +3,12 @@ package com.example.lms_system_api.service;
 import com.example.lms_system_api.dto.CourseDto;
 import com.example.lms_system_api.dto.CourseUpdateDto;
 import com.example.lms_system_api.entity.Course;
+import com.example.lms_system_api.exception.BadRequestEx;
 import com.example.lms_system_api.exception.NotFoundException;
 import com.example.lms_system_api.mapper.CourseMapper;
 import com.example.lms_system_api.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,12 +32,12 @@ public class CourseService {
         return courseMapper.toDtoList(courses);
     }
 
-    public CourseDto createCourse(CourseDto dto) throws BadRequestException {
+    public CourseDto createCourse(CourseDto dto){
         log.info("Started creating course with name: {}", dto.getName());
 
         if (courseRepository.existsByName(dto.getName())) {
             log.error("Course with name: {} already exists", dto.getName());
-            throw new BadRequestException("Course with this name already exists!");
+            throw new BadRequestEx("Course with this name already exists!");
         }
         Course course = courseMapper.toEntity(dto);
         Course newCourse = courseRepository.save(course);
@@ -64,7 +64,7 @@ public class CourseService {
         }
     }
 
-    public CourseDto updateCourse(Long id, CourseUpdateDto dto) throws BadRequestException {
+    public CourseDto updateCourse(Long id, CourseUpdateDto dto){
         log.info("Requested to update course: {}", dto.getName());
 
         log.debug("Course details: {}", dto);
@@ -75,7 +75,7 @@ public class CourseService {
                 });
         if (dto.getName() != null && !dto.getName().equals(course.getName()) && courseRepository.existsByName(dto.getName())) {
             log.error("Course with name: {} already exists in database!", dto.getName());
-            throw new BadRequestException("Course with this name already exists!");
+            throw new BadRequestEx("Course with this name already exists!");
         }
         safetySaveValue(dto.getName(), course::setName);
         safetySaveValue(dto.getDescription(), course::setDescription);
