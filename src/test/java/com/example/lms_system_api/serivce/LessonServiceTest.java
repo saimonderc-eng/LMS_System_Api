@@ -2,6 +2,7 @@ package com.example.lms_system_api.serivce;
 
 import com.example.lms_system_api.dto.LessonDto;
 import com.example.lms_system_api.dto.LessonUpdateDto;
+import com.example.lms_system_api.entity.Chapter;
 import com.example.lms_system_api.entity.Lesson;
 import com.example.lms_system_api.exception.BadRequestEx;
 import com.example.lms_system_api.exception.NotFoundException;
@@ -57,12 +58,14 @@ public class LessonServiceTest {
     @Test
     void createLesson_Success() {
         LessonDto dto = new LessonDto();
+        dto.setId(1L);
+        dto.setChapterId(1L);
         dto.setName("Basics");
         Lesson lesson = new Lesson();
+        Chapter chapter = new Chapter();
 
-        when(chapterRepository.existsById(any())).thenReturn(true);
-        when(lessonRepository.existsByName(any())).thenReturn(false);
         when(lessonRepository.existsByName("Basics")).thenReturn(false);
+        when(chapterRepository.findById(1L)).thenReturn(Optional.of(chapter));
         when(lessonMapper.toEntity(dto)).thenReturn(lesson);
         when(lessonRepository.save(any())).thenReturn(lesson);
         when(lessonMapper.toDto(lesson)).thenReturn(dto);
@@ -101,11 +104,12 @@ public class LessonServiceTest {
 
     @Test
     void deleteLesson_Success(){
-        Long id = 1L;
-        when(lessonRepository.existsById(id)).thenReturn(true);
+        Lesson lesson = new Lesson();
+        lesson.setId(1L);
+        when(lessonRepository.findById(1L)).thenReturn(Optional.of(lesson));
 
-        lessonService.deleteLesson(id);
-        verify(lessonRepository).deleteById(id);
+        lessonService.deleteLesson(1L);
+        verify(lessonRepository).delete(lesson);
     }
 
     @Test

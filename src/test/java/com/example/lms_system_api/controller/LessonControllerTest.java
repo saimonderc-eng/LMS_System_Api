@@ -4,47 +4,39 @@ import com.example.lms_system_api.dto.LessonDto;
 import com.example.lms_system_api.dto.LessonUpdateDto;
 import com.example.lms_system_api.service.LessonService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
+@WebMvcTest(LessonController.class)
 public class LessonControllerTest {
+    @Autowired
     private MockMvc mockMvc;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Mock
+    @MockitoBean
     private LessonService lessonService;
 
-    @InjectMocks
-    private LessonController lessonController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(lessonController).build();
-    }
 
     @Test
     void getLessons_Success() throws Exception {
         Mockito.when(lessonService.getLessons()).thenReturn(List.of(new LessonDto()));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/lessons"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(get("/api/v1/lessons"))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -55,10 +47,10 @@ public class LessonControllerTest {
 
         Mockito.when(lessonService.createLesson(any())).thenReturn(dto);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/lessons")
+        mockMvc.perform(post("/api/v1/lessons")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -66,15 +58,15 @@ public class LessonControllerTest {
         LessonUpdateDto updateDto = new LessonUpdateDto();
         updateDto.setName("New Lesson Name");
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/lessons/1")
+        mockMvc.perform(put("/api/v1/lessons/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(status().isOk());
     }
 
     @Test
     void deleteLesson_Success() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/lessons/1"))
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
+        mockMvc.perform(delete("/api/v1/lessons/1"))
+                .andExpect(status().isNoContent());
     }
 }

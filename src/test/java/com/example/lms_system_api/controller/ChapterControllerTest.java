@@ -4,16 +4,14 @@ import com.example.lms_system_api.dto.ChapterDto;
 import com.example.lms_system_api.dto.ChapterUpdateDto;
 import com.example.lms_system_api.service.ChapterService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 import java.util.List;
 
@@ -23,22 +21,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
+@WebMvcTest(ChapterController.class)
 class ChapterControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Mock
+    @MockitoBean
     private ChapterService chapterService;
-
-    @InjectMocks
-    private ChapterController chapterController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(chapterController).build();
-    }
 
     @Test
     void getChapters_Success() throws Exception {

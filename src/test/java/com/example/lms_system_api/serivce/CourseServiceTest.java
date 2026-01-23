@@ -78,11 +78,13 @@ public class CourseServiceTest {
 
     @Test
     void deleteCourse_Success(){
-        Long id = 1L;
-        when(courseRepository.existsById(id)).thenReturn(true);
+        Course course = new Course();
+        course.setId(1L);
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
 
-        courseService.deleteCourse(id);
-        verify(courseRepository).deleteById(id);
+        courseService.deleteCourse(1L);
+
+        verify(courseRepository).delete(course);
     }
 
     @Test

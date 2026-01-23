@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/chapter")
+@RequestMapping("/api/v1/chapters")
 @RequiredArgsConstructor
 @Tag(name = "Главы",
         description = "Методы для работы с главами обучения")

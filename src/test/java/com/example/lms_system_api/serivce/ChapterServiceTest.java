@@ -3,6 +3,7 @@ package com.example.lms_system_api.serivce;
 import com.example.lms_system_api.dto.ChapterDto;
 import com.example.lms_system_api.dto.ChapterUpdateDto;
 import com.example.lms_system_api.entity.Chapter;
+import com.example.lms_system_api.entity.Course;
 import com.example.lms_system_api.exception.BadRequestEx;
 import com.example.lms_system_api.exception.NotFoundException;
 import com.example.lms_system_api.mapper.ChapterMapper;
@@ -18,13 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.never;
 
@@ -57,12 +58,14 @@ public class ChapterServiceTest {
     @Test
     void createChapter_Success() {
         ChapterDto dto = new ChapterDto();
+        dto.setId(1L);
+        dto.setCourseId(1L);
         dto.setName("Basics");
         Chapter chapter = new Chapter();
+        Course course = new Course();
 
-        when(courseRepository.existsById(any())).thenReturn(true);
-        when(chapterRepository.existsByName(any())).thenReturn(false);
         when(chapterRepository.existsByName("Basics")).thenReturn(false);
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         when(chapterMapper.toEntity(dto)).thenReturn(chapter);
         when(chapterRepository.save(any())).thenReturn(chapter);
         when(chapterMapper.toDto(chapter)).thenReturn(dto);
@@ -92,6 +95,7 @@ public class ChapterServiceTest {
     void createChapter_NameExists_Exception() {
         ChapterDto dto = new ChapterDto();
         dto.setName("Basics");
+
         when(courseRepository.existsById(any())).thenReturn(true);
         when(chapterRepository.existsByName("Basics")).thenReturn(true);
 
@@ -101,19 +105,20 @@ public class ChapterServiceTest {
 
     @Test
     void deleteChapter_Success(){
-        Long id = 1L;
-        when(chapterRepository.existsById(anyLong())).thenReturn(true);
-        when(chapterRepository.existsById(id)).thenReturn(true);
+        Chapter chapter = new Chapter();
+        chapter.setId(1L);
+        when(chapterRepository.findById(1L)).thenReturn(Optional.of(chapter));
 
-        chapterService.deleteChapter(id);
-        verify(chapterRepository).deleteById(id);
+        chapterService.deleteChapter(1L);
+
+        verify(chapterRepository).delete(chapter);
     }
 
     @Test
     @DisplayName("Ошибка 404 если id главы не найден")
     void deleteChapter_NotFound_Exception(){
         Long id = 1L;
-        when(chapterRepository.existsById(id)).thenReturn(false);
+        when(chapterRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> chapterService.deleteChapter(id));
         verify(chapterRepository, never()).deleteById(anyLong());
