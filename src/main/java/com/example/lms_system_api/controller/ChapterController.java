@@ -40,11 +40,11 @@ public class ChapterController {
             @ApiResponse(responseCode = "404", description = "Указанный курс (courseId) не найден!")
     })
     @PostMapping
-    public ResponseEntity<?> createChapter(@RequestBody ChapterDto dto){
+    public ResponseEntity<?> createChapter(@RequestBody ChapterDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(chapterService.createChapter(dto));
     }
 
-    @Operation(summary = "Удалить главу",
+    @Operation(summary = "Удалить главу по уникальному идентификатору",
             description = "Помечает главу как удаленную(soft delete). " +
                     "Если глава по id не найдена выводит 404 Not Found")
     @ApiResponses(value = {
@@ -57,7 +57,7 @@ public class ChapterController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Обновить значения главы",
+    @Operation(summary = "Обновить значения главы по уникальному идентификатору",
             description = "Обновляет указанные значения главы по её id. Требует существующий id главы и уникальное новое название. " +
                     "Иначе выводит ошибку 404 Not Found/ 400 Bad Request")
     @ApiResponses(value = {
@@ -66,8 +66,20 @@ public class ChapterController {
             @ApiResponse(responseCode = "400", description = "Глава с таким названием уже существует!")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateChapter(@PathVariable Long id, @RequestBody ChapterUpdateDto dto){
+    public ResponseEntity<?> updateChapter(@PathVariable Long id, @RequestBody ChapterUpdateDto dto) {
         ChapterDto updatedChapter = chapterService.updateChapter(id, dto);
         return ResponseEntity.ok(updatedChapter);
+    }
+
+    @Operation(summary = "Найти главу по уникальному идентификатору",
+            description = "Отправляет главу найденная по её id. Требует id существующей главы. " +
+                    "Иначе выводит ошибку 404 Not Found")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Глава успешно найдена!"),
+            @ApiResponse(responseCode = "404", description = "Глава по указанному id не найдена!")
+    })
+    @GetMapping("/find-by-id/{id}")
+    public ResponseEntity<ChapterDto> findChapterById(@PathVariable Long id) {
+        return ResponseEntity.ok(chapterService.findChapterById(id));
     }
 }

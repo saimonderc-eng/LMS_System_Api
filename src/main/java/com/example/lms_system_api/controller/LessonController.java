@@ -40,11 +40,11 @@ public class LessonController {
             @ApiResponse(responseCode = "404", description = "Указанная глава (chapter_id) не найдена!")
     })
     @PostMapping
-    public ResponseEntity<?> createLessons(@RequestBody LessonDto dto){
+    public ResponseEntity<?> createLessons(@RequestBody LessonDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.createLesson(dto));
     }
 
-    @Operation(summary = "Удалить урок",
+    @Operation(summary = "Удалить урок по уникальному идентификатору",
             description = "Помечает урок как удаленный(soft delete). " +
                     "Если урок по id не найден выводит 404 Not Found")
     @ApiResponses(value = {
@@ -57,7 +57,7 @@ public class LessonController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Обновить значения урока",
+    @Operation(summary = "Обновить значения урока по уникальному идентификатору",
             description = "Обновляет указанные значения урока по его id. Требует существующий id урока и уникальное новое название. " +
                     "Иначе выводит ошибку 404 Not Found/ 400 Bad Request")
     @ApiResponses(value = {
@@ -66,8 +66,20 @@ public class LessonController {
             @ApiResponse(responseCode = "400", description = "Урок с таким названием уже существует!")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateLessons(@PathVariable Long id, @RequestBody LessonUpdateDto dto){
+    public ResponseEntity<?> updateLessons(@PathVariable Long id, @RequestBody LessonUpdateDto dto) {
         LessonDto updatedLesson = lessonService.updateLesson(id, dto);
         return ResponseEntity.ok(updatedLesson);
+    }
+
+    @Operation(summary = "Найти урок по уникальному идентификатору",
+            description = "Отправляет урок найденный по его id. Требует id существующего урока. " +
+                    "Иначе отправляет ошибку 404 Not Found")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Урок успешно найден!"),
+            @ApiResponse(responseCode = "404", description = "Урок по указанному id не найден!")
+    })
+    @GetMapping("/find-by-id/{id}")
+    public ResponseEntity<LessonDto> findLessonById(@PathVariable Long id) {
+        return ResponseEntity.ok(lessonService.findLessonById(id));
     }
 }

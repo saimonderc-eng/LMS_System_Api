@@ -54,6 +54,36 @@ public class ChapterServiceTest {
         assertEquals(2, result.size());
         verify(chapterRepository).findAll();
     }
+    @Test
+    void getChapterById_success() {
+        Chapter chapter = new Chapter();
+        chapter.setId(1L);
+        ChapterDto dto = new ChapterDto();
+        dto.setId(1L);
+        Long testId = 1L;
+
+        when(chapterRepository.findById(testId)).thenReturn(Optional.of(chapter));
+        when(chapterMapper.toDto(chapter)).thenReturn(dto);
+
+        ChapterDto result = chapterService.findChapterById(testId);
+
+        assertNotNull(result);
+        assertEquals(testId, result.getId());
+        verify(chapterRepository).findById(testId);
+    }
+
+    @Test
+    @DisplayName("Ошибка 404 если глава не найдена")
+    void getChapterById_NotFound_Exception(){
+        Chapter chapter = new Chapter();
+        chapter.setId(1L);
+
+        when(chapterRepository.findById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> chapterService.findChapterById(2L));
+        verify(chapterRepository, never()).save(any());
+
+    }
 
     @Test
     void createChapter_Success() {

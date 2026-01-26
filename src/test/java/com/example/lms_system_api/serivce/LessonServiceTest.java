@@ -54,7 +54,35 @@ public class LessonServiceTest {
         assertEquals(2, result.size());
         verify(lessonRepository).findAll();
     }
+    @Test
+    void getLessonById_success(){
+        Lesson lesson = new Lesson();
+        lesson.setId(1L);
+        LessonDto dto = new LessonDto();
+        dto.setId(1L);
+        Long testId = 1L;
 
+        when(lessonRepository.findById(testId)).thenReturn(Optional.of(lesson));
+        when(lessonMapper.toDto(lesson)).thenReturn(dto);
+
+        LessonDto result = lessonService.findLessonById(testId);
+
+        assertNotNull(result);
+        assertEquals(testId, result.getId());
+
+        verify(lessonRepository).findById(testId);
+    }
+    @Test
+    @DisplayName("Ошибка 404 если урок не найден")
+    void findLessonById_NotFound_Exception(){
+        Lesson lesson = new Lesson();
+        lesson.setId(1L);
+
+        when(lessonRepository.findById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> lessonService.findLessonById(2L));
+        verify(lessonRepository, never()).save(any());
+    }
     @Test
     void createLesson_Success() {
         LessonDto dto = new LessonDto();

@@ -94,4 +94,18 @@ public class ChapterService {
         log.info("Successfully saved values for: {}", id);
         return chapterMapper.toDto(chapter);
     }
+
+    public ChapterDto findChapterById(Long id) {
+        log.info("Requested to find chapter by id: {}", id);
+
+        Chapter foundChapter = chapterRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Chapter by id: {} not found!", id);
+                    return new NotFoundException("Chapter not found!");
+                });
+        log.debug("Found chapter details: {}", foundChapter);
+
+        log.info("Successfully found chapter by id: {} !", id);
+        return chapterMapper.toDto(foundChapter);
+    }
 }

@@ -32,7 +32,7 @@ public class CourseService {
         return courseMapper.toDtoList(courses);
     }
 
-    public CourseDto createCourse(CourseDto dto){
+    public CourseDto createCourse(CourseDto dto) {
         log.info("Started creating course with name: {}", dto.getName());
 
         if (courseRepository.existsByName(dto.getName())) {
@@ -64,7 +64,7 @@ public class CourseService {
         }
     }
 
-    public CourseDto updateCourse(Long id, CourseUpdateDto dto){
+    public CourseDto updateCourse(Long id, CourseUpdateDto dto) {
         log.info("Requested to update course: {}", dto.getName());
 
         log.debug("Course details: {}", dto);
@@ -83,5 +83,19 @@ public class CourseService {
         courseRepository.save(course);
         log.info("Successfully saved values for: {}", id);
         return courseMapper.toDto(course);
+    }
+
+    public CourseDto findCourseById(Long id) {
+        log.info("Requested to find course by id: {}", id);
+
+        Course foundCourse = courseRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Course by id: {} not found!", id);
+                    return new NotFoundException("Course not found!");
+                });
+        log.debug("Found course details: {}", foundCourse);
+
+        log.info("Successfully found course by id: {} !", id);
+        return courseMapper.toDto(foundCourse);
     }
 }

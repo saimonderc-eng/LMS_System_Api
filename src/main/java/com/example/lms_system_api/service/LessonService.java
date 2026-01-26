@@ -96,4 +96,18 @@ public class LessonService {
         log.info("Successfully saved values for: {}", id);
         return lessonMapper.toDto(lesson);
     }
+
+    public LessonDto findLessonById(Long id) {
+        log.info("Requested to find lesson by id: {}", id);
+
+        Lesson foundLesson = lessonRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Lesson by id: {} not found!", id);
+                    return new NotFoundException("Lesson not found!");
+                });
+        log.debug("Lesson details: {}", foundLesson);
+
+        log.info("Successfully found lesson by id: {} !", id);
+        return lessonMapper.toDto(foundLesson);
+    }
 }

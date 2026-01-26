@@ -49,6 +49,35 @@ public class CourseServiceTest {
     }
 
     @Test
+    void findCourseById_success() {
+        Course course = new Course();
+        course.setId(1L);
+        CourseDto dto = new CourseDto();
+        dto.setId(1L);
+        Long testId = 1L;
+
+        when(courseRepository.findById(testId)).thenReturn(Optional.of(course));
+        when(courseMapper.toDto(course)).thenReturn(dto);
+
+        CourseDto result = courseService.findCourseById(testId);
+        assertNotNull(result);
+        assertEquals(testId, result.getId());
+        verify(courseRepository).findById(testId);
+    }
+
+    @Test
+    @DisplayName("Ошибка 404 если курс не найден")
+    void findCourseById_NotFound_Exception() {
+        Course course = new Course();
+        course.setId(1L);
+
+        when(courseRepository.findById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> courseService.findCourseById(2L));
+        verify(courseRepository, never()).save(any());
+    }
+
+    @Test
     void createCourse_Success() {
         CourseDto dto = new CourseDto();
         dto.setName("Java");
@@ -77,7 +106,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    void deleteCourse_Success(){
+    void deleteCourse_Success() {
         Course course = new Course();
         course.setId(1L);
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
@@ -89,7 +118,7 @@ public class CourseServiceTest {
 
     @Test
     @DisplayName("Ошибка 404 если id курса не найден")
-    void deleteCourse_NotFound_Exception(){
+    void deleteCourse_NotFound_Exception() {
         Long id = 1L;
         when(courseRepository.existsById(anyLong())).thenReturn(false);
         when(courseRepository.existsById(id)).thenReturn(false);
@@ -99,7 +128,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    void updateCourse_Success(){
+    void updateCourse_Success() {
         Long id = 1L;
         CourseUpdateDto updateDto = new CourseUpdateDto();
         updateDto.setDescription("Python");
@@ -114,7 +143,7 @@ public class CourseServiceTest {
 
     @Test
     @DisplayName("Ошибка 404 если курса не существует")
-    void updateCourse_NotFound_Exception(){
+    void updateCourse_NotFound_Exception() {
         Long id = 1L;
         CourseUpdateDto dto = new CourseUpdateDto();
         dto.setName("New Name");
@@ -123,9 +152,10 @@ public class CourseServiceTest {
         assertThrows(NotFoundException.class, () -> courseService.updateCourse(id, dto));
         verify(courseRepository, never()).save(any());
     }
+
     @Test
     @DisplayName("Ошибка 400 если имя курса занято")
-    void updateCourse_BadRequest_Exception(){
+    void updateCourse_BadRequest_Exception() {
         Long id = 1L;
         CourseUpdateDto dto = new CourseUpdateDto();
         dto.setName("New Course");
