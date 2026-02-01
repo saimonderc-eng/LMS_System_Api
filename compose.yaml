@@ -10,7 +10,33 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
-
+  keycloak:
+      image: quay.io/keycloak/keycloak:26.0.0
+      command:
+        - start-dev
+        - --http-relative-path=/auth
+      environment:
+         KC_BOOTSTRAP_ADMIN_USERNAME: admin
+         KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+         KC_DB: postgres
+         KC_DB_URL: jdbc:postgresql://keycloak-db:5432/postgres
+         KC_DB_USERNAME: postgres
+         KC_DB_PASSWORD: postgres
+      ports:
+        - "8081:8080"
+      depends_on:
+        - keycloak-db
+  keycloak-db:
+    image: "postgres:latest"
+    container_name: keycloak_db_container
+    environment:
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=postgres"
+      - "POSTGRES_DB=postgres"
+    labels:
+      - "org.springframework.boot.service-connection=false"
+    ports:
+      - "2345:5432"
   api:
     build: .
     container_name: lms_api
@@ -19,8 +45,8 @@ services:
     depends_on:
       - postgres
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres?currentSchema=lms_sys_api
-      - SPRING_LIQUIBASE_DEFAULT_SCHEMA=lms_sys_api
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/lms_db?currentSchema=public
+      - SPRING_LIQUIBASE_DEFAULT_SCHEMA=public
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
     labels:
