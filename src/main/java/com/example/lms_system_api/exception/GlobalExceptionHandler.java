@@ -73,4 +73,15 @@ public class GlobalExceptionHandler {
                         .timestamp(LocalDateTime.now())
                         .build());
     }
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<ErrorResponse> handleAuthException(AuthException exception){
+        log.error(exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.builder()
+                        .message(exception.getMessage())
+                        .status(401)
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
 }

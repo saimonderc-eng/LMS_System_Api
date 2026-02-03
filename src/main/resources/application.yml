@@ -9,12 +9,10 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
   security:
-     oauth2:
-       resource-server:
-         jwt:
-           issuer-uri: http://localhost:8081/realms/auth/realms/lms-realm
-           jwk-set-uri: http://localhost:8081/auth/realms/lms-realm/protocol/openid-connect/certs
-
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: http://localhost:8081/auth/realms/lms_realm
   liquibase:
     change-log: classpath:db/changelog/changelog.xml
 
@@ -27,4 +25,9 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
+
+keycloak:
+  token-uri: http://localhost:8081/auth/realms/lms_realm/protocol/openid-connect/token
+  client-id: lms-client
+  client-secret: ni2dFtqNotqKaNAfi7kYqYITONcyMrRd
 
