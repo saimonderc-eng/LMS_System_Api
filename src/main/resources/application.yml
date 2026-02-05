@@ -30,4 +30,12 @@ keycloak:
   token-uri: http://localhost:8081/auth/realms/lms_realm/protocol/openid-connect/token
   client-id: lms-client
   client-secret: ni2dFtqNotqKaNAfi7kYqYITONcyMrRd
+  admin:
+    server-url: http://localhost:8081/auth
+    realm: lms-realm
+    client-id: lms-client
+    client-secret: ni2dFtqNotqKaNAfi7kYqYITONcyMrRd
+    username: admin
+    password: admin
+
 

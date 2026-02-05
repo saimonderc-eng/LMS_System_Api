@@ -10,7 +10,16 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RefreshTokenRequest {
+public class UserDto {
 
-    String refreshToken;
+
+    String id;
+
+    String username;
+
+    String email;
+
+    String firstName;
+
+    String secondName;
 }

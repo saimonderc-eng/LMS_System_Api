@@ -31,6 +31,7 @@ public class AuthService {
     @Value("${keycloak.client-secret}")
     private String clientSecret;
 
+
     private TokenResponse map(KeycloakTokenResponse kc) {
         TokenResponse response = new TokenResponse();
         response.setAccessToken(kc.getAccessToken());
@@ -95,5 +96,17 @@ public class AuthService {
             throw new AuthException("Keycloak token response in empty!");
         }
         return map(body);
+    }
+
+    public boolean validatePassword(String username, String password){
+        try {
+            LoginRequestDto dto = new LoginRequestDto();
+            dto.setUsername(username);
+            dto.setPassword(password);
+            login(dto);
+            return true;
+        } catch (AuthException e){
+            return false;
+        }
     }
 }

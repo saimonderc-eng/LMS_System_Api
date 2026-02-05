@@ -1,5 +1,6 @@
 package com.example.lms_system_api.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +11,14 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RefreshTokenRequest {
+public class UpdateUserRequest {
 
-    String refreshToken;
+    @NotBlank
+    String id;
+
+    @NotBlank
+    String username;
+
+    @NotBlank
+    String email;
 }
