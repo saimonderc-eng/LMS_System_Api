@@ -29,7 +29,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/teacher/**").hasAnyRole("ADMIN", "TEACHER")
-                        .requestMatchers("/api/v1/user/**").permitAll()
+                        .requestMatchers("/api/v1/user/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.

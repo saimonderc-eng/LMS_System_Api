@@ -32,7 +32,7 @@ keycloak:
   client-secret: ni2dFtqNotqKaNAfi7kYqYITONcyMrRd
   admin:
     server-url: http://localhost:8081/auth
-    realm: lms-realm
+    realm: lms_realm
     client-id: lms-client
     client-secret: ni2dFtqNotqKaNAfi7kYqYITONcyMrRd
     username: admin

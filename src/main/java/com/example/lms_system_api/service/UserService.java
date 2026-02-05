@@ -34,7 +34,7 @@ public class UserService {
     private final Keycloak keycloak;
     private final AuthService authService;
 
-    @Value("${keycloak.realm}")
+    @Value("${keycloak.admin.realm}")
     private String realm;
 
     public void createUser(CreateUserRequest request) {
