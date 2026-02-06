@@ -13,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
 
 
 @Service
@@ -30,6 +33,9 @@ public class AuthService {
 
     @Value("${keycloak.client-secret}")
     private String clientSecret;
+
+    @Value("${spring.security.oauth2.resource-server.jwt.issuer-uri}")
+    private String issuerUri;
 
 
     private TokenResponse map(KeycloakTokenResponse kc) {
@@ -81,15 +87,13 @@ public class AuthService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        HttpEntity<MultiValueMap<String, String>> entity =
-                new HttpEntity<>(form, headers);
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(form, headers);
 
-        ResponseEntity<KeycloakTokenResponse> response =
-                restTemplate.postForEntity(
-                        tokenUri,
-                        entity,
-                        KeycloakTokenResponse.class
-                );
+        ResponseEntity<KeycloakTokenResponse> response = restTemplate.postForEntity(
+                tokenUri,
+                entity,
+                KeycloakTokenResponse.class
+        );
         KeycloakTokenResponse body = response.getBody();
 
         if (body == null) {
@@ -98,15 +102,29 @@ public class AuthService {
         return map(body);
     }
 
-    public boolean validatePassword(String username, String password){
+    public boolean validatePassword(String username, String password) {
         try {
-            LoginRequestDto dto = new LoginRequestDto();
-            dto.setUsername(username);
-            dto.setPassword(password);
-            login(dto);
+            String url = issuerUri + "/protocol/openid-connect/token";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+            map.add("grant_type", "password");
+            map.add("client_id", clientId);
+            map.add("client_secret", clientSecret);
+            map.add("username", username);
+            map.add("password", password);
+
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+            restTemplate.postForEntity(url, request, Map.class);
+
             return true;
-        } catch (AuthException e){
+        } catch (HttpClientErrorException.Unauthorized e) {
             return false;
+        } catch (Exception e) {
+            throw new AuthException("Keycloak connection error");
         }
     }
 }
