@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,23 +34,27 @@ public class CourseController {
 
     @Operation(summary = "Создать новый курс",
             description = "Регистрация нового курса в систему. Требует уникального названия. " +
-                    "Иначе возвращает ошибку 400 Bad Request")
+                    "Иначе возвращает ошибку 400 Bad Request",
+            tags = "admin")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Курс успешно создан!"),
             @ApiResponse(responseCode = "400", description = "Курс с таким названием уже существует!")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> createCourse(@RequestBody CourseDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(dto));
     }
 
     @Operation(summary = "Удалить курс по уникальному идентификатору",
-            description = "Помечает куос как удаленный(soft delete). " +
-                    "Если курс по id не найден выводит 404 Not Found")
+            description = "Помечает курс как удаленный(soft delete). " +
+                    "Если курс по id не найден выводит 404 Not Found",
+            tags = "admin")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Курс успешно удален!"),
             @ApiResponse(responseCode = "404", description = "Курс по указанному id не найден!")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
@@ -58,12 +63,14 @@ public class CourseController {
 
     @Operation(summary = "Обновить значение курса по уникальному идентификатору",
             description = "Обновляет указанные значения курса по его id. Требует существующий id курса и уникальное новое название. " +
-                    "Иначе выводит ошибку 404 Not Found/ 400 Bad Request")
+                    "Иначе выводит ошибку 404 Not Found/ 400 Bad Request",
+            tags = "admin")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Указанные значения курса успешно обновлены!"),
             @ApiResponse(responseCode = "404", description = "Курс по указанному id не найден!"),
             @ApiResponse(responseCode = "400", description = "Курс с таким названием уже существует!")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCourse(@PathVariable Long id, @RequestBody CourseUpdateDto dto) {
         CourseDto updatedCourse = courseService.updateCourse(id, dto);

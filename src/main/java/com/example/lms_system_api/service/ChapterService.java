@@ -4,8 +4,8 @@ import com.example.lms_system_api.dto.ChapterDto;
 import com.example.lms_system_api.dto.ChapterUpdateDto;
 import com.example.lms_system_api.entity.Chapter;
 import com.example.lms_system_api.entity.Course;
-import com.example.lms_system_api.exception.BadRequestEx;
-import com.example.lms_system_api.exception.NotFoundException;
+import com.example.lms_system_api.exception.LmsBadRequestException;
+import com.example.lms_system_api.exception.LmsNotFoundException;
 import com.example.lms_system_api.mapper.ChapterMapper;
 import com.example.lms_system_api.repository.ChapterRepository;
 import com.example.lms_system_api.repository.CourseRepository;
@@ -41,12 +41,12 @@ public class ChapterService {
         log.debug("Chapter details: {}", dto);
         if (chapterRepository.existsByName(dto.getName())) {
             log.error("Chapter with name: {} already exists!", dto.getName());
-            throw new BadRequestEx("Chapter with this name already exists!");
+            throw new LmsBadRequestException("Chapter with this name already exists!");
         }
         Course course = courseRepository.findById(dto.getCourseId())
                 .orElseThrow(() -> {
                     log.error("Course by id: {} not found", dto.getCourseId());
-                    return new NotFoundException("Course not found!");
+                    return new LmsNotFoundException("Course not found!");
                 });
         Chapter chapter = chapterMapper.toEntity(dto);
         chapter.setCourse(course);
@@ -61,7 +61,7 @@ public class ChapterService {
         Chapter chapter = chapterRepository.findById(id).
                 orElseThrow(() -> {
                     log.error("Chapter with id: {} not found!", id);
-                    return new NotFoundException("Chapter not found!");
+                    return new LmsNotFoundException("Chapter not found!");
                 });
         chapterRepository.delete(chapter);
         log.info("Successfully deleted chapter by id: {}", id);
@@ -80,11 +80,11 @@ public class ChapterService {
         Chapter chapter = chapterRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Chapter by id: {} not found!", id);
-                    return new NotFoundException("Chapter not found!");
+                    return new LmsNotFoundException("Chapter not found!");
                 });
         if (dto.getName() != null && !dto.getName().equals(chapter.getName()) && chapterRepository.existsByName(dto.getName())) {
             log.error("Chapter with name: {} already exists in database!", dto.getName());
-            throw new BadRequestEx("Chapter with this name already exists!");
+            throw new LmsBadRequestException("Chapter with this name already exists!");
         }
         safetySaveValue(dto.getName(), chapter::setName);
         safetySaveValue(dto.getDescription(), chapter::setDescription);
@@ -101,7 +101,7 @@ public class ChapterService {
         Chapter foundChapter = chapterRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Chapter by id: {} not found!", id);
-                    return new NotFoundException("Chapter not found!");
+                    return new LmsNotFoundException("Chapter not found!");
                 });
         log.debug("Found chapter details: {}", foundChapter);
 

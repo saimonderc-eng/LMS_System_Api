@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,12 +34,14 @@ public class LessonController {
 
     @Operation(summary = "Создать новый урок",
             description = "Регистрация нового урока в систему. Требует уникального названия и id существующей главы. " +
-                    "Иначе возвращает ошибку 400 Bad Request/ 404 Not Found")
+                    "Иначе возвращает ошибку 400 Bad Request/ 404 Not Found",
+            tags = "admin")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Урок успешно создан!"),
             @ApiResponse(responseCode = "400", description = "Урок с таким названием уже существует!"),
             @ApiResponse(responseCode = "404", description = "Указанная глава (chapter_id) не найдена!")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> createLessons(@RequestBody LessonDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.createLesson(dto));
@@ -46,11 +49,13 @@ public class LessonController {
 
     @Operation(summary = "Удалить урок по уникальному идентификатору",
             description = "Помечает урок как удаленный(soft delete). " +
-                    "Если урок по id не найден выводит 404 Not Found")
+                    "Если урок по id не найден выводит 404 Not Found",
+            tags = "admin")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Урок успешно удален!"),
             @ApiResponse(responseCode = "404", description = "Урок по указанному id не найден!")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLesson(@PathVariable Long id) {
         lessonService.deleteLesson(id);
@@ -59,12 +64,14 @@ public class LessonController {
 
     @Operation(summary = "Обновить значения урока по уникальному идентификатору",
             description = "Обновляет указанные значения урока по его id. Требует существующий id урока и уникальное новое название. " +
-                    "Иначе выводит ошибку 404 Not Found/ 400 Bad Request")
+                    "Иначе выводит ошибку 404 Not Found/ 400 Bad Request",
+            tags = "admin")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Указанные значения урока успешно обновлены!"),
             @ApiResponse(responseCode = "404", description = "Урок по указанному id не найден!"),
             @ApiResponse(responseCode = "400", description = "Урок с таким названием уже существует!")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateLessons(@PathVariable Long id, @RequestBody LessonUpdateDto dto) {
         LessonDto updatedLesson = lessonService.updateLesson(id, dto);

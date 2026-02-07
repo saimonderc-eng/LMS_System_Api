@@ -4,8 +4,8 @@ import com.example.lms_system_api.dto.LessonDto;
 import com.example.lms_system_api.dto.LessonUpdateDto;
 import com.example.lms_system_api.entity.Chapter;
 import com.example.lms_system_api.entity.Lesson;
-import com.example.lms_system_api.exception.BadRequestEx;
-import com.example.lms_system_api.exception.NotFoundException;
+import com.example.lms_system_api.exception.LmsBadRequestException;
+import com.example.lms_system_api.exception.LmsNotFoundException;
 import com.example.lms_system_api.mapper.LessonMapper;
 import com.example.lms_system_api.repository.ChapterRepository;
 import com.example.lms_system_api.repository.LessonRepository;
@@ -80,7 +80,7 @@ public class LessonServiceTest {
 
         when(lessonRepository.findById(2L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> lessonService.findLessonById(2L));
+        assertThrows(LmsNotFoundException.class, () -> lessonService.findLessonById(2L));
         verify(lessonRepository, never()).save(any());
     }
     @Test
@@ -112,7 +112,7 @@ public class LessonServiceTest {
 
         when(chapterRepository.existsById(100L)).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () ->
+        assertThrows(LmsNotFoundException.class, () ->
                 lessonService.createLesson(dto));
 
         verify(chapterRepository, never()).save(any());
@@ -126,7 +126,7 @@ public class LessonServiceTest {
         when(lessonRepository.existsById(any())).thenReturn(true);
         when(lessonRepository.existsByName("Basics")).thenReturn(true);
 
-        assertThrows(BadRequestEx.class, () -> lessonService.createLesson(dto));
+        assertThrows(LmsBadRequestException.class, () -> lessonService.createLesson(dto));
         verify(lessonRepository, never()).save(any());
     }
 
@@ -146,7 +146,7 @@ public class LessonServiceTest {
         Long id = 1L;
         when(lessonRepository.existsById(id)).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> lessonService.deleteLesson(id));
+        assertThrows(LmsNotFoundException.class, () -> lessonService.deleteLesson(id));
         verify(lessonRepository, never()).deleteById(anyLong());
     }
 
@@ -172,7 +172,7 @@ public class LessonServiceTest {
         dto.setName("New Lesson");
 
         when(lessonRepository.findById(id)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class,
+        assertThrows(LmsNotFoundException.class,
                 () -> lessonService.updateLesson(id, dto));
         verify(lessonRepository, never()).save(any());
     }
@@ -188,7 +188,7 @@ public class LessonServiceTest {
         when(lessonRepository.findById(id)).thenReturn(Optional.of(lesson));
         when(lessonRepository.existsByName("New Lesson")).thenReturn(true);
 
-        assertThrows(BadRequestEx.class, () ->
+        assertThrows(LmsBadRequestException.class, () ->
                 lessonService.updateLesson(id, dto));
         verify(lessonRepository, never()).save(any());
     }

@@ -3,8 +3,8 @@ package com.example.lms_system_api.service;
 import com.example.lms_system_api.dto.CourseDto;
 import com.example.lms_system_api.dto.CourseUpdateDto;
 import com.example.lms_system_api.entity.Course;
-import com.example.lms_system_api.exception.BadRequestEx;
-import com.example.lms_system_api.exception.NotFoundException;
+import com.example.lms_system_api.exception.LmsBadRequestException;
+import com.example.lms_system_api.exception.LmsNotFoundException;
 import com.example.lms_system_api.mapper.CourseMapper;
 import com.example.lms_system_api.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class CourseService {
 
         if (courseRepository.existsByName(dto.getName())) {
             log.error("Course with name: {} already exists", dto.getName());
-            throw new BadRequestEx("Course with this name already exists!");
+            throw new LmsBadRequestException("Course with this name already exists!");
         }
         Course course = courseMapper.toEntity(dto);
         Course newCourse = courseRepository.save(course);
@@ -51,7 +51,7 @@ public class CourseService {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Course by id: {} not found", id);
-                    return new NotFoundException("Course not found");
+                    return new LmsNotFoundException("Course not found");
                 });
         courseRepository.delete(course);
         log.info("Successfully deleted course by id: {}", id);
@@ -71,11 +71,11 @@ public class CourseService {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Course by id: {} not found!", id);
-                    return new NotFoundException("Course not found!");
+                    return new LmsNotFoundException("Course not found!");
                 });
         if (dto.getName() != null && !dto.getName().equals(course.getName()) && courseRepository.existsByName(dto.getName())) {
             log.error("Course with name: {} already exists in database!", dto.getName());
-            throw new BadRequestEx("Course with this name already exists!");
+            throw new LmsBadRequestException("Course with this name already exists!");
         }
         safetySaveValue(dto.getName(), course::setName);
         safetySaveValue(dto.getDescription(), course::setDescription);
@@ -91,7 +91,7 @@ public class CourseService {
         Course foundCourse = courseRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Course by id: {} not found!", id);
-                    return new NotFoundException("Course not found!");
+                    return new LmsNotFoundException("Course not found!");
                 });
         log.debug("Found course details: {}", foundCourse);
 

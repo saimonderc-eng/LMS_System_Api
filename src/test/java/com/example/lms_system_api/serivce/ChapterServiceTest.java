@@ -4,8 +4,8 @@ import com.example.lms_system_api.dto.ChapterDto;
 import com.example.lms_system_api.dto.ChapterUpdateDto;
 import com.example.lms_system_api.entity.Chapter;
 import com.example.lms_system_api.entity.Course;
-import com.example.lms_system_api.exception.BadRequestEx;
-import com.example.lms_system_api.exception.NotFoundException;
+import com.example.lms_system_api.exception.LmsBadRequestException;
+import com.example.lms_system_api.exception.LmsNotFoundException;
 import com.example.lms_system_api.mapper.ChapterMapper;
 import com.example.lms_system_api.repository.ChapterRepository;
 import com.example.lms_system_api.repository.CourseRepository;
@@ -80,7 +80,7 @@ public class ChapterServiceTest {
 
         when(chapterRepository.findById(2L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> chapterService.findChapterById(2L));
+        assertThrows(LmsNotFoundException.class, () -> chapterService.findChapterById(2L));
         verify(chapterRepository, never()).save(any());
 
     }
@@ -114,7 +114,7 @@ public class ChapterServiceTest {
 
         when(courseRepository.existsById(100L)).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () ->
+        assertThrows(LmsNotFoundException.class, () ->
                 chapterService.createChapter(dto));
 
         verify(courseRepository, never()).save(any());
@@ -129,7 +129,7 @@ public class ChapterServiceTest {
         when(courseRepository.existsById(any())).thenReturn(true);
         when(chapterRepository.existsByName("Basics")).thenReturn(true);
 
-        assertThrows(BadRequestEx.class, () -> chapterService.createChapter(dto));
+        assertThrows(LmsBadRequestException.class, () -> chapterService.createChapter(dto));
         verify(chapterRepository, never()).save(any());
     }
 
@@ -150,7 +150,7 @@ public class ChapterServiceTest {
         Long id = 1L;
         when(chapterRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> chapterService.deleteChapter(id));
+        assertThrows(LmsNotFoundException.class, () -> chapterService.deleteChapter(id));
         verify(chapterRepository, never()).deleteById(anyLong());
     }
 
@@ -176,7 +176,7 @@ public class ChapterServiceTest {
         dto.setName("New Name");
 
         when(chapterRepository.findById(id)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> chapterService.updateChapter(id, dto));
+        assertThrows(LmsNotFoundException.class, () -> chapterService.updateChapter(id, dto));
         verify(chapterRepository, never()).save(any());
     }
     @Test
@@ -191,7 +191,7 @@ public class ChapterServiceTest {
         when(chapterRepository.findById(id)).thenReturn(Optional.of(Chapter));
         when(chapterRepository.existsByName("New Chapter")).thenReturn(true);
 
-        assertThrows(BadRequestEx.class, () ->
+        assertThrows(LmsBadRequestException.class, () ->
                 chapterService.updateChapter(id, dto));
         verify(chapterRepository, never()).save(any());
     }

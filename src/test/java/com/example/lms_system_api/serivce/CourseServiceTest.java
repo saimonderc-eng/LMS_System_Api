@@ -3,8 +3,8 @@ package com.example.lms_system_api.serivce;
 import com.example.lms_system_api.dto.CourseDto;
 import com.example.lms_system_api.dto.CourseUpdateDto;
 import com.example.lms_system_api.entity.Course;
-import com.example.lms_system_api.exception.BadRequestEx;
-import com.example.lms_system_api.exception.NotFoundException;
+import com.example.lms_system_api.exception.LmsBadRequestException;
+import com.example.lms_system_api.exception.LmsNotFoundException;
 import com.example.lms_system_api.mapper.CourseMapper;
 import com.example.lms_system_api.repository.CourseRepository;
 import com.example.lms_system_api.service.CourseService;
@@ -73,7 +73,7 @@ public class CourseServiceTest {
 
         when(courseRepository.findById(2L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> courseService.findCourseById(2L));
+        assertThrows(LmsNotFoundException.class, () -> courseService.findCourseById(2L));
         verify(courseRepository, never()).save(any());
     }
 
@@ -101,7 +101,7 @@ public class CourseServiceTest {
         dto.setName("Java");
         when(courseRepository.existsByName("Java")).thenReturn(true);
 
-        assertThrows(BadRequestEx.class, () -> courseService.createCourse(dto));
+        assertThrows(LmsBadRequestException.class, () -> courseService.createCourse(dto));
         verify(courseRepository, never()).save(any());
     }
 
@@ -123,7 +123,7 @@ public class CourseServiceTest {
         when(courseRepository.existsById(anyLong())).thenReturn(false);
         when(courseRepository.existsById(id)).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> courseService.deleteCourse(id));
+        assertThrows(LmsNotFoundException.class, () -> courseService.deleteCourse(id));
         verify(courseRepository, never()).deleteById(anyLong());
     }
 
@@ -149,7 +149,7 @@ public class CourseServiceTest {
         dto.setName("New Name");
 
         when(courseRepository.findById(id)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> courseService.updateCourse(id, dto));
+        assertThrows(LmsNotFoundException.class, () -> courseService.updateCourse(id, dto));
         verify(courseRepository, never()).save(any());
     }
 
@@ -165,7 +165,7 @@ public class CourseServiceTest {
         when(courseRepository.findById(id)).thenReturn(Optional.of(course));
         when(courseRepository.existsByName("New Course")).thenReturn(true);
 
-        assertThrows(BadRequestEx.class, () ->
+        assertThrows(LmsBadRequestException.class, () ->
                 courseService.updateCourse(id, dto));
         verify(courseRepository, never()).save(any());
     }
