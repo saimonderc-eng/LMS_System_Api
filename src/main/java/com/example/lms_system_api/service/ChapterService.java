@@ -26,45 +26,45 @@ public class ChapterService {
     private final ChapterMapper chapterMapper;
 
     public List<ChapterDto> getChapters() {
-        log.info("Requested to get all chapters");
+        log.info("REQUESTED to get all chapters");
 
         List<Chapter> chapters = chapterRepository.findAll();
-        log.debug("Found: {} chapters in database", chapters.size());
+        log.debug("FOUND: {} chapters in database", chapters.size());
 
         return chapterMapper.toDtoList(chapters);
     }
 
 
     public ChapterDto createChapter(ChapterDto dto) {
-        log.info("Requested to create chapter: '{}' for course id: {}", dto.getName(), dto.getCourseId());
+        log.info("REQUESTED to create chapter: '{}' for course id: {}", dto.getName(), dto.getCourseId());
 
-        log.debug("Chapter details: {}", dto);
+        log.debug("CHAPTER details: {}", dto);
         if (chapterRepository.existsByName(dto.getName())) {
-            log.error("Chapter with name: {} already exists!", dto.getName());
+            log.error("CHAPTER with name: {} already exists!", dto.getName());
             throw new LmsBadRequestException("Chapter with this name already exists!");
         }
         Course course = courseRepository.findById(dto.getCourseId())
                 .orElseThrow(() -> {
-                    log.error("Course by id: {} not found", dto.getCourseId());
+                    log.error("COURSE by id: {} not found", dto.getCourseId());
                     return new LmsNotFoundException("Course not found!");
                 });
         Chapter chapter = chapterMapper.toEntity(dto);
         chapter.setCourse(course);
         Chapter newChapter = chapterRepository.save(chapter);
 
-        log.info("Successfully created chapter with id: {}", newChapter.getId());
+        log.info("SUCCESSFULLY created chapter with id: {}", newChapter.getId());
         return chapterMapper.toDto(newChapter);
     }
 
     public void deleteChapter(Long id) {
-        log.info("Requested to delete chapter by id: {}", id);
+        log.info("REQUESTED to delete chapter by id: {}", id);
         Chapter chapter = chapterRepository.findById(id).
                 orElseThrow(() -> {
-                    log.error("Chapter with id: {} not found!", id);
+                    log.error("CHAPTER with id: {} not found!", id);
                     return new LmsNotFoundException("Chapter not found!");
                 });
         chapterRepository.delete(chapter);
-        log.info("Successfully deleted chapter by id: {}", id);
+        log.info("SUCCESSFULLY deleted chapter by id: {}", id);
     }
 
     public <T> void safetySaveValue(T value, Consumer<T> consumer) {
@@ -74,16 +74,16 @@ public class ChapterService {
     }
 
     public ChapterDto updateChapter(Long id, ChapterUpdateDto dto) {
-        log.info("Requested to update chapter by id: {}", id);
+        log.info("REQUESTED to update chapter by id: {}", id);
 
-        log.debug("Chapter details: {}", dto);
+        log.debug("CHAPTER details: {}", dto);
         Chapter chapter = chapterRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Chapter by id: {} not found!", id);
+                    log.error("CHAPTER by id: {} not found!", id);
                     return new LmsNotFoundException("Chapter not found!");
                 });
         if (dto.getName() != null && !dto.getName().equals(chapter.getName()) && chapterRepository.existsByName(dto.getName())) {
-            log.error("Chapter with name: {} already exists in database!", dto.getName());
+            log.error("CHAPTER with name: {} already exists in database!", dto.getName());
             throw new LmsBadRequestException("Chapter with this name already exists!");
         }
         safetySaveValue(dto.getName(), chapter::setName);
@@ -91,21 +91,21 @@ public class ChapterService {
         safetySaveValue(dto.getOrder(), chapter::setOrder);
 
         chapterRepository.save(chapter);
-        log.info("Successfully saved values for: {}", id);
+        log.info("SUCCESSFULLY saved values for: {}", id);
         return chapterMapper.toDto(chapter);
     }
 
     public ChapterDto findChapterById(Long id) {
-        log.info("Requested to find chapter by id: {}", id);
+        log.info("REQUESTED to find chapter by id: {}", id);
 
         Chapter foundChapter = chapterRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Chapter by id: {} not found!", id);
+                    log.error("CHAPTER by id: {} not found!", id);
                     return new LmsNotFoundException("Chapter not found!");
                 });
-        log.debug("Found chapter details: {}", foundChapter);
+        log.debug("FOUND chapter details: {}", foundChapter);
 
-        log.info("Successfully found chapter by id: {} !", id);
+        log.info("SUCCESSFULLY found chapter by id: {} !", id);
         return chapterMapper.toDto(foundChapter);
     }
 }

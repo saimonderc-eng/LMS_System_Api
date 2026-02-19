@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,14 +34,17 @@ class ChapterControllerTest {
     private ChapterService chapterService;
 
     @Test
+    @WithMockUser(roles ="ADMIN")
     void getChapters_Success() throws Exception {
         when(chapterService.getChapters()).thenReturn(List.of(new ChapterDto()));
 
-        mockMvc.perform(get("/api/v1/chapters"))
+        mockMvc.perform(get("/api/v1/chapters")
+                        .with(csrf()))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void createChapter_Success() throws Exception {
         ChapterDto dto = new ChapterDto();
         dto.setName("Basics");
@@ -48,25 +53,30 @@ class ChapterControllerTest {
         when(chapterService.createChapter(any())).thenReturn(dto);
 
         mockMvc.perform(post("/api/v1/chapters")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void updateChapter_Success() throws Exception {
         ChapterUpdateDto updateDto = new ChapterUpdateDto();
         updateDto.setName("New Chapter Name");
 
         mockMvc.perform(put("/api/v1/chapters/1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto)))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void deleteChapter_Success() throws Exception {
-        mockMvc.perform(delete("/api/v1/chapters/1"))
+        mockMvc.perform(delete("/api/v1/chapters/1")
+                        .with(csrf()))
                 .andExpect(status().isNoContent());
     }
 }

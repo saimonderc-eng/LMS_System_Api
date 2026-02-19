@@ -38,7 +38,7 @@ public class UserService {
     private String realm;
 
     public void createUser(CreateUserRequest request) {
-        log.info("Requested to create user by username: {}", request.getUsername());
+        log.info("REQUESTED to create user by username: {}", request.getUsername());
         try {
             UsersResource users = keycloak.realm(realm).users();
 
@@ -53,38 +53,38 @@ public class UserService {
             user.setCredentials(List.of(temporaryPassword));
             user.setEnabled(true);
 
-            log.debug("User values: {}", user);
+            log.debug("USER values: {}", user);
             try (Response response = users.create(user)) {
                 int status = response.getStatus();
 
                 if (status == 201) {
                     String userId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
-                    log.info("User created successfully with id: {}", userId);
+                    log.info("USER created successfully with id: {}", userId);
 
                     RoleRepresentation adminRole = keycloak.realm(realm)
                             .roles().get(request.getRole()).toRepresentation();
 
                     users.get(userId).roles().realmLevel().add(List.of(adminRole));
-                    log.info("Role: {} successfully assigned to user: {}", request.getRole(), request.getUsername());
+                    log.info("ROLE: {} successfully assigned to user: {}", request.getRole(), request.getUsername());
                 } else if (status == 409){
-                    log.warn("User with username: {} already exists in keycloak!", request.getUsername());
+                    log.warn("USER with username: {} already exists in keycloak!", request.getUsername());
                     throw new LmsUsernameAlreadyExistsException("Username already taken!");
                 } else {
-                    log.error("Failed to create user, keycloak status: {}", status);
+                    log.error("FAILED to create user, keycloak status: {}", status);
                     throw new LmsBadRequestException("Could not create user!");
                 }
             }
         } catch (HttpServerErrorException ex) {
-            log.error("Keycloak error during creating user: {}, {}!", request.getUsername(), ex.getMessage());
+            log.error("KEYCLOAK error during creating user: {}, {}!", request.getUsername(), ex.getMessage());
             throw new LmsAuthException("Couldn't reach out keycloak server!");
         } catch (Exception ex) {
-            log.error("Unexpected error occurred creating user!");
+            log.error("UNEXPECTED error occurred creating user!");
             throw new LmsInternalException("Internal creating error!");
         }
     }
 
     public UserDto getCurrentUser() {
-        log.info("Requested to get current user");
+        log.info("REQUESTED to get current user");
         try {
             return Optional.of(SecurityContextHolder.getContext())
                     .map(SecurityContext::getAuthentication)
@@ -106,24 +106,24 @@ public class UserService {
                     })
                     .orElseThrow(() -> new LmsNotFoundException("User not found!"));
         } catch (HttpServerErrorException ex) {
-            log.error("Keycloak error during getting current user!");
+            log.error("KEYCLOAK error during getting current user!");
             throw new LmsAuthException("Couldn't reach out keycloak!");
         } catch (Exception ex) {
-            log.error("Unexpected error occurred trying to get current user!");
+            log.error("UNEXPECTED error occurred trying to get current user!");
             throw new LmsInternalException("Internal error!");
         }
 
     }
 
     public void update(UpdateUserRequest request) {
-        log.info("Requested to update user values!");
+        log.info("REQUESTED to update user values!");
         try {
             UserDto currentUser = getCurrentUser();
 
             if (keycloak.realm(realm).users().search(request.getUsername()).stream()
                     .anyMatch(u -> !u.getId().equals(request.getId())
                             && u.getUsername().equals(request.getUsername()))) {
-                log.warn("Username: {} already taken!", request.getUsername());
+                log.warn("USERNAME: {} already taken!", request.getUsername());
                 throw new LmsUsernameAlreadyExistsException("Username already taken!");
             }
 
@@ -135,28 +135,28 @@ public class UserService {
             user.setEmail(currentUser.getEmail());
 
             keycloak.realm(realm).users().get(currentUser.getId()).update(user);
-            log.info("Successfully updated user by id: {} values!", request.getId());
+            log.info("SUCCESSFULLY updated user by id: {} values!", request.getId());
         } catch (HttpServerErrorException ex) {
-            log.error("Keycloak error trying to update valuer for user id: {}, {}!", request.getId(), ex.getMessage());
+            log.error("KEYCLOAK error trying to update valuer for user id: {}, {}!", request.getId(), ex.getMessage());
             throw new LmsAuthException("Couldn't reach out keycloak!");
         } catch (Exception ex) {
-            log.error("Unexpected error occurred trying to update user values!");
+            log.error("UNEXPECTED error occurred trying to update user values!");
             throw new LmsInternalException("Internal updating error!");
         }
     }
 
     public void updatePassword(UpdatePasswordRequest request) {
-        log.info("Requested to update user password by id: {}", request.getId());
+        log.info("REQUESTED to update user password by id: {}", request.getId());
         try {
             UserDto currentUser = getCurrentUser();
 
             if (!currentUser.getId().equals(request.getId())) {
-                log.warn("Error trying to change foreign password!");
+                log.warn("ERROR trying to change foreign password!");
                 throw new ForbiddenException("You can change only your password!");
             }
             boolean oldPasswordValid = authService.validatePassword(currentUser.getUsername(), request.getCurrentPassword());
             if (!oldPasswordValid) {
-                log.warn("Incorrect credentials, try again!");
+                log.warn("INCORRECT credentials, try again!");
                 throw new LmsIncorrectPasswordException("Current password is incorrect!");
             }
             CredentialRepresentation newPassword = new CredentialRepresentation();
@@ -165,16 +165,16 @@ public class UserService {
             newPassword.setTemporary(false);
 
             if (!request.getNewPassword().equals(request.getNewPasswordConfirmation())) {
-                log.warn("Passwords must be the same, try again!");
+                log.warn("ERROR passwords must be the same, try again!");
                 throw new LmsBadRequestException("Passwords are not the same!");
             }
             keycloak.realm(realm)
                     .users().get(currentUser.getId()).resetPassword(newPassword);
-            log.info("Successfully change password for user by id: {}!", request.getId());
+            log.info("SUCCESSFULLY change password for user by id: {}!", request.getId());
         } catch (WebApplicationException ex) {
-            log.error("Keycloak API error during password updating: {}", ex.getMessage());
+            log.error("KEYCLOAK API error during password updating: {}", ex.getMessage());
         } catch (Exception ex) {
-            log.error("Unexpected error occurred trying to update password!");
+            log.error("UNEXPECTED error occurred trying to update password!");
             throw new LmsInternalException("Internal password updating error!");
 
         }

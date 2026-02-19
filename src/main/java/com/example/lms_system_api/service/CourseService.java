@@ -24,37 +24,37 @@ public class CourseService {
 
 
     public List<CourseDto> getCourses() {
-        log.info("Requested to get all courses");
+        log.info("REQUESTED to get all courses");
 
         List<Course> courses = courseRepository.findAll();
-        log.debug("Found: {} courses in database", courses.size());
+        log.debug("FOUND: {} courses in database", courses.size());
 
         return courseMapper.toDtoList(courses);
     }
 
     public CourseDto createCourse(CourseDto dto) {
-        log.info("Started creating course with name: {}", dto.getName());
+        log.info("STARTED creating course with name: {}", dto.getName());
 
         if (courseRepository.existsByName(dto.getName())) {
-            log.error("Course with name: {} already exists", dto.getName());
+            log.error("COURSE with name: {} already exists", dto.getName());
             throw new LmsBadRequestException("Course with this name already exists!");
         }
         Course course = courseMapper.toEntity(dto);
         Course newCourse = courseRepository.save(course);
 
-        log.info("Successfully created course with id: {}", newCourse.getId());
+        log.info("SUCCESSFULLY created course with id: {}", newCourse.getId());
         return courseMapper.toDto(newCourse);
     }
 
     public void deleteCourse(Long id) {
-        log.info("Requested to delete course by id: {}", id);
+        log.info("REQUESTED to delete course by id: {}", id);
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Course by id: {} not found", id);
+                    log.error("COURSE by id: {} not found", id);
                     return new LmsNotFoundException("Course not found");
                 });
         courseRepository.delete(course);
-        log.info("Successfully deleted course by id: {}", id);
+        log.info("SUCCESSFULLY deleted course by id: {}", id);
     }
 
 
@@ -65,37 +65,37 @@ public class CourseService {
     }
 
     public CourseDto updateCourse(Long id, CourseUpdateDto dto) {
-        log.info("Requested to update course: {}", dto.getName());
+        log.info("REQUESTED to update course: {}", dto.getName());
 
-        log.debug("Course details: {}", dto);
+        log.debug("COURSE details: {}", dto);
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Course by id: {} not found!", id);
+                    log.error("COURSE by id: {} not found!", id);
                     return new LmsNotFoundException("Course not found!");
                 });
         if (dto.getName() != null && !dto.getName().equals(course.getName()) && courseRepository.existsByName(dto.getName())) {
-            log.error("Course with name: {} already exists in database!", dto.getName());
+            log.error("COURSE with name: {} already exists in database!", dto.getName());
             throw new LmsBadRequestException("Course with this name already exists!");
         }
         safetySaveValue(dto.getName(), course::setName);
         safetySaveValue(dto.getDescription(), course::setDescription);
 
         courseRepository.save(course);
-        log.info("Successfully saved values for: {}", id);
+        log.info("SUCCESSFULLY saved values for: {}", id);
         return courseMapper.toDto(course);
     }
 
     public CourseDto findCourseById(Long id) {
-        log.info("Requested to find course by id: {}", id);
+        log.info("REQUESTED to find course by id: {}", id);
 
         Course foundCourse = courseRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Course by id: {} not found!", id);
+                    log.error("COURSE by id: {} not found!", id);
                     return new LmsNotFoundException("Course not found!");
                 });
-        log.debug("Found course details: {}", foundCourse);
+        log.debug("FOUND course details: {}", foundCourse);
 
-        log.info("Successfully found course by id: {} !", id);
+        log.info("SUCCESSFULLY found course by id: {} !", id);
         return courseMapper.toDto(foundCourse);
     }
 }

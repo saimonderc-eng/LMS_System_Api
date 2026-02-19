@@ -27,6 +27,7 @@ public class SecurityConfig {
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/refresh"
                         ).permitAll()
+                        .requestMatchers("/api/v1/files/upload").hasAnyRole("ADMIN", "TEACHER")
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/teacher/**").hasAnyRole("ADMIN", "TEACHER")
                         .requestMatchers("/api/v1/user/**").authenticated()

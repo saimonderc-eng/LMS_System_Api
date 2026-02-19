@@ -29,13 +29,14 @@ springdoc:
 keycloak:
   token-uri: http://localhost:8081/auth/realms/lms_realm/protocol/openid-connect/token
   client-id: lms-client
-  client-secret: ni2dFtqNotqKaNAfi7kYqYITONcyMrRd
+  client-secret: y5iQqO05FoEQ4Q2WNTT6Dzp4OjmNZdUs
   admin:
     server-url: http://localhost:8081/auth
     realm: lms_realm
     client-id: lms-client
-    client-secret: ni2dFtqNotqKaNAfi7kYqYITONcyMrRd
-    username: admin
-    password: admin
-
-
+    client-secret: y5iQqO05FoEQ4Q2WNTT6Dzp4OjmNZdUs
+minio:
+  endpoint: http://localhost:9000
+  bucket: lms-bucket
+  user: minioadmin
+  password: minioadmin

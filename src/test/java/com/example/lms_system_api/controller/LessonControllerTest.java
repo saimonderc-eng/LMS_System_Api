@@ -11,12 +11,14 @@ import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,14 +34,17 @@ public class LessonControllerTest {
 
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void getLessons_Success() throws Exception {
         Mockito.when(lessonService.getLessons()).thenReturn(List.of(new LessonDto()));
 
-        mockMvc.perform(get("/api/v1/lessons"))
+        mockMvc.perform(get("/api/v1/lessons")
+                        .with(csrf()))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void createLesson_Success() throws Exception {
         LessonDto dto = new LessonDto();
         dto.setName("Basics");
@@ -48,25 +53,30 @@ public class LessonControllerTest {
         Mockito.when(lessonService.createLesson(any())).thenReturn(dto);
 
         mockMvc.perform(post("/api/v1/lessons")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void updateLesson_Success() throws Exception {
         LessonUpdateDto updateDto = new LessonUpdateDto();
         updateDto.setName("New Lesson Name");
 
         mockMvc.perform(put("/api/v1/lessons/1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto)))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void deleteLesson_Success() throws Exception {
-        mockMvc.perform(delete("/api/v1/lessons/1"))
+        mockMvc.perform(delete("/api/v1/lessons/1")
+                        .with(csrf()))
                 .andExpect(status().isNoContent());
     }
 }

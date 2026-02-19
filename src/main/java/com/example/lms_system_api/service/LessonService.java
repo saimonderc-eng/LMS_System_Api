@@ -26,25 +26,25 @@ public class LessonService {
     private final LessonMapper lessonMapper;
 
     public List<LessonDto> getLessons() {
-        log.info("Requested to get all lessons");
+        log.info("REQUESTED to get all lessons");
 
         List<Lesson> lessons = lessonRepository.findAll();
-        log.debug("Found: {} lessons in database", lessons.size());
+        log.debug("FOUND: {} lessons in database", lessons.size());
 
         return lessonMapper.toDtoList(lessons);
     }
 
     public LessonDto createLesson(LessonDto dto) {
-        log.info("Requested to create lesson: '{}' for chapter id: {}", dto.getName(), dto.getChapterId());
+        log.info("REQUESTED to create lesson: '{}' for chapter id: {}", dto.getName(), dto.getChapterId());
 
-        log.debug("Lesson details: {}", dto);
+        log.debug("LESSON details: {}", dto);
         if (lessonRepository.existsByName(dto.getName())) {
-            log.error("Lesson with name: {} already exists in database!", dto.getName());
+            log.error("LESSON with name: {} already exists in database!", dto.getName());
             throw new LmsBadRequestException("Lesson with this name already exists!");
         }
         Chapter chapter = chapterRepository.findById(dto.getChapterId())
                 .orElseThrow(() -> {
-                    log.error("Failed to create lesson: Chapter with id: {} not found!", dto.getChapterId());
+                    log.error("FAILED to create lesson: Chapter with id: {} not found!", dto.getChapterId());
                     return new LmsNotFoundException("Chapter not found!");
                 });
         Lesson lesson = lessonMapper.toEntity(dto);
@@ -52,20 +52,20 @@ public class LessonService {
 
         Lesson addedLesson = lessonRepository.save(lesson);
 
-        log.info("Lesson successfully created with id: {}", addedLesson.getId());
+        log.info("LESSON successfully created with id: {}", addedLesson.getId());
         return lessonMapper.toDto(addedLesson);
     }
 
     public void deleteLesson(Long id) {
-        log.info("Requested to delete lesson by id: {}", id);
+        log.info("REQUESTED to delete lesson by id: {}", id);
 
         Lesson lesson = lessonRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Lesson by id: {} not found", id);
+                    log.error("LESSON by id: {} not found", id);
                     return new LmsNotFoundException("Lesson not found!");
                 });
         lessonRepository.delete(lesson);
-        log.info("Successfully deleted lesson by id: {}", id);
+        log.info("SUCCESSFULLY deleted lesson by id: {}", id);
     }
 
     public <T> void safetySaveValue(T value, Consumer<T> consumer) {
@@ -75,16 +75,16 @@ public class LessonService {
     }
 
     public LessonDto updateLesson(Long id, LessonUpdateDto dto) {
-        log.info("Requested to update values for: {}", dto.getName());
+        log.info("REQUESTED to update values for: {}", dto.getName());
 
-        log.debug("Lesson details: {}", dto);
+        log.debug("LESSON details: {}", dto);
         Lesson lesson = lessonRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Lesson by id: {} not found", id);
+                    log.error("LESSON by id: {} not found", id);
                     return new LmsNotFoundException("Lesson not found!");
                 });
         if (dto.getName() != null && !dto.getName().equals(lesson.getName()) && lessonRepository.existsByName(dto.getName())) {
-            log.error("Lesson with name: {} already exists in database!", dto.getName());
+            log.error("LESSON with name: {} already exists in database!", dto.getName());
             throw new LmsBadRequestException("Lessons with this name already exists!");
         }
         safetySaveValue(dto.getName(), lesson::setName);
@@ -93,21 +93,21 @@ public class LessonService {
         safetySaveValue(dto.getOrder(), lesson::setOrder);
 
         lessonRepository.save(lesson);
-        log.info("Successfully saved values for: {}", id);
+        log.info("SUCCESSFULLY saved values for: {}", id);
         return lessonMapper.toDto(lesson);
     }
 
     public LessonDto findLessonById(Long id) {
-        log.info("Requested to find lesson by id: {}", id);
+        log.info("REQUESTED to find lesson by id: {}", id);
 
         Lesson foundLesson = lessonRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Lesson by id: {} not found!", id);
+                    log.error("LESSON by id: {} not found!", id);
                     return new LmsNotFoundException("Lesson not found!");
                 });
-        log.debug("Lesson details: {}", foundLesson);
+        log.debug("LESSON details: {}", foundLesson);
 
-        log.info("Successfully found lesson by id: {} !", id);
+        log.info("SUCCESSFULLY found lesson by id: {} !", id);
         return lessonMapper.toDto(foundLesson);
     }
 }

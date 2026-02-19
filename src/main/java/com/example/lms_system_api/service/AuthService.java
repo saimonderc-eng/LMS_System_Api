@@ -53,7 +53,7 @@ public class AuthService {
     }
 
     public TokenResponse login(LoginRequestDto request) {
-        log.info("Requested to login by username: {}", request.getUsername());
+        log.info("REQUESTED to login by username: {}", request.getUsername());
 
         try {
             MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
@@ -79,19 +79,19 @@ public class AuthService {
             KeycloakTokenResponse body = response.getBody();
 
             if (body == null) {
-                log.error("Error keycloak token is empty!");
+                log.error("ERROR keycloak token is empty!");
                 throw new LmsBadRequestException("Keycloak token response is empty!");
             }
-            log.info("Successfully login to account by username: {}", request.getUsername());
+            log.info("SUCCESSFULLY login to account by username: {}", request.getUsername());
             return map(body);
         } catch (HttpClientErrorException ex) {
-            log.warn("Keycloak rejected login for {}: {}", request.getUsername(), ex.getStatusCode());
+            log.warn("KEYCLOAK rejected login for {}: {}", request.getUsername(), ex.getStatusCode());
             throw new LmsAuthException("Invalid credentials!");
         }
     }
 
     public TokenResponse refresh(String refreshToken) {
-        log.info("Requested to refresh jwt tokens");
+        log.info("REQUESTED to refresh jwt tokens");
 
         try {
             MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
@@ -113,19 +113,19 @@ public class AuthService {
             KeycloakTokenResponse body = response.getBody();
 
             if (body == null) {
-                log.error("Your keycloak token is empty!");
+                log.error("ERROR keycloak refresh token: {} is empty!", refreshToken);
                 throw new LmsBadRequestException("Keycloak token response in empty!");
             }
-            log.info("Successfully refreshed tokens!");
+            log.info("SUCCESSFULLY refreshed tokens!");
             return map(body);
         } catch (HttpClientErrorException.BadRequest ex) {
-            log.warn("Invalid refresh token request: {}", ex.getResponseBodyAsString());
+            log.warn("INVALID refresh token request: {}", ex.getResponseBodyAsString());
             throw new LmsBadRequestException("Refresh token is invalid or already used!");
         }
     }
 
     public boolean validatePassword(String username, String password) {
-        log.info("Requested to validate password by username: {}", username);
+        log.info("REQUESTED to validate password by username: {}", username);
         try {
             String url = issuerUri + "/protocol/openid-connect/token";
 
@@ -143,18 +143,18 @@ public class AuthService {
 
             restTemplate.postForEntity(url, request, Map.class);
 
-            log.info("Successfully validated password for user: {}!", username);
+            log.info("SUCCESSFULLY validated password for user: {}!", username);
             return true;
 
 
         } catch (HttpClientErrorException.Unauthorized | HttpClientErrorException.BadRequest ex) {
-            log.warn("Invalid credentials for user: {}!", username);
+            log.warn("INVALID credentials for user: {}!", username);
             return false;
         } catch (HttpServerErrorException ex) {
-            log.error("Keycloak error during validating password for user: {}, {}!", username, ex.getMessage());
+            log.error("KEYCLOAK error during validating password for user: {}, {}!", username, ex.getMessage());
             throw new LmsAuthException("Couldn't reach out keycloak!");
         } catch (Exception ex) {
-            log.error("Unexpected error occurred during password validating!");
+            log.error("UNEXPECTED error occurred during password validating!");
             throw new LmsInternalException("Internal validating error!");
         }
     }
